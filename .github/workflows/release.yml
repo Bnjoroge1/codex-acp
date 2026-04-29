@@ -222,7 +222,7 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Code sign macOS binary
-        if: startsWith(matrix.os, 'macos')
+        if: startsWith(matrix.os, 'macos') && !github.event.repository.fork
         env:
           MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
@@ -233,7 +233,7 @@ jobs:
           ./script/sign-mac target/${{ matrix.target }}/release/codex-acp
 
       - name: Code sign Windows binary
-        if: startsWith(matrix.os, 'windows')
+        if: startsWith(matrix.os, 'windows') && !github.event.repository.fork
         env:
           AZURE_TENANT_ID: ${{ secrets.AZURE_SIGNING_TENANT_ID }}
           AZURE_CLIENT_ID: ${{ secrets.AZURE_SIGNING_CLIENT_ID }}
@@ -393,7 +393,7 @@ jobs:
 
   create-release:
     name: Create Release
-    needs: [get-version, build, publish-npm-base]
+    needs: [get-version, build, npm-packages]
     runs-on: ubuntu-latest
 
     steps:
